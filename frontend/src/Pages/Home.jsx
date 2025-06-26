@@ -1,9 +1,10 @@
 import React from 'react'
+import Navbar from '../Components/Navbar'
 
 const Home = () => {
   return (
-    <div className='text-4xl'>
-      Home
+    <div className=''>
+      <Navbar/>
     </div>
   )
 }
