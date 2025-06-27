@@ -2,26 +2,13 @@ import React, { useState, useContext } from "react";
 import { useParking } from "../../context/ParkingContext.jsx";
 import { AuthContext } from "../../context/AuthContext.jsx";
 
-
-const getSlotDisplayInfo = (slot, bookings, userId) => {
+const getSlotDisplayInfo = (slot, userId) => {
     if (slot.status === 'occupied') {
         return {
             status: 'occupied',
             className: slot.userId === userId ? 'bg-blue-300' : 'bg-red-300 cursor-not-allowed',
             text: slot.currentVehicle,
-            isClickable: slot.userId === userId,
-        };
-    }
-
-    const relevantBooking = bookings.find(b => b.slotId === slot.id && b.status === 'pending');
-    if (relevantBooking) {
-        const bookingTime = new Date(relevantBooking.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        return {
-            status: 'booked',
-            className: relevantBooking.userId === userId ? 'bg-yellow-300 cursor-pointer' : 'bg-orange-300 cursor-not-allowed',
-            text: `Booked ${bookingTime}`,
-            isClickable: relevantBooking.userId === userId,
-            bookingId: relevantBooking.id,
+            isClickable: false,
         };
     }
 
@@ -35,7 +22,7 @@ const getSlotDisplayInfo = (slot, bookings, userId) => {
 
 
 const BookSlotPage = () => {
-    const { slots, bookings, loading, error, bookSlot, cancelBooking } = useParking();
+    const { slots, loading, error, bookSlot } = useParking();
     const { user } = useContext(AuthContext);
 
     const [isBookingModalOpen, setBookingModalOpen] = useState(false);
@@ -45,62 +32,45 @@ const BookSlotPage = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const handleSlotClick = (slot) => {
-        const displayInfo = getSlotDisplayInfo(slot, bookings, user?.id);
+        const displayInfo = getSlotDisplayInfo(slot, user?.id);
         if (!displayInfo.isClickable) return;
 
         setSelectedSlot(slot);
+
         if (displayInfo.status === 'available') {
             const now = new Date();
-            now.setMinutes(now.getMinutes() + 5); 
-            now.setSeconds(0);
             setBookingTime(now.toISOString().substring(0, 16));
             setVehicleNumber(user?.vehicleNumber || "");
             setBookingModalOpen(true);
-        } else if (displayInfo.status === 'booked' && displayInfo.bookingId) {
-            if (window.confirm("Do you want to cancel this booking?")) {
-                handleCancelBooking(displayInfo.bookingId);
-            }
         }
     };
 
     const handleBookingSubmit = async (e) => {
         e.preventDefault();
         if (!vehicleNumber || !bookingTime) {
-            alert("Vehicle number and booking time are required.");
+            alert("Vehicle number and parking time are required.");
             return;
         }
         setIsSubmitting(true);
         const result = await bookSlot(selectedSlot.id, vehicleNumber, bookingTime);
         if (result.success) {
-            alert(`Slot ${selectedSlot.number} booked successfully!`);
+            alert(`Slot ${selectedSlot.number} is now occupied successfully!`);
             setBookingModalOpen(false);
         } else {
-            alert(`Booking failed: ${result.error}`);
+            alert(`Failed: ${result.error}`);
         }
         setIsSubmitting(false);
     };
 
-    const handleCancelBooking = async (bookingId) => {
-        setIsSubmitting(true);
-        const result = await cancelBooking(bookingId);
-        if(result.success) {
-            alert("Booking cancelled successfully.");
-        } else {
-            alert(`Failed to cancel: ${result.error}`);
-        }
-        setIsSubmitting(false);
-    };
-
-
-    if (loading) return <div>Loading...</div>;
-    if (error) return <div>Error: {error}</div>;
+    if (loading) return <div className="text-center py-10">Loading parking information...</div>;
+    if (error) return <div className="text-center py-10 text-red-500">Error: {error}</div>;
 
     return (
         <div className="container mx-auto px-4 py-8">
-            <h1 className="text-3xl font-bold text-gray-800 mb-8">Book a Parking Slot</h1>
+            <h1 className="text-3xl font-bold text-gray-800 mb-8">Park in a Slot</h1>
             <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-4">
                 {slots.map((slot) => {
-                    const displayInfo = getSlotDisplayInfo(slot, bookings, user?.id);
+                    const displayInfo = getSlotDisplayInfo(slot, user?.id);
                     return (
                         <div
                             key={slot.id}
@@ -117,19 +87,19 @@ const BookSlotPage = () => {
             {isBookingModalOpen && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center p-4">
                     <div className="bg-white p-6 rounded-lg shadow-2xl w-full max-w-md">
-                        <h2 className="text-2xl font-bold mb-4">Book Slot {selectedSlot?.number}</h2>
+                        <h2 className="text-2xl font-bold mb-4">Park in Slot {selectedSlot?.number}</h2>
                         <form onSubmit={handleBookingSubmit}>
                             <div className="mb-4">
-                                <label htmlFor="bookingTime" className="block text-sm font-medium text-gray-700 mb-1">Booking Time</label>
+                                <label htmlFor="inTime" className="block text-sm font-medium text-gray-700 mb-1">In Time</label>
                                 <input
                                     type="datetime-local"
-                                    id="bookingTime"
+                                    id="inTime"
                                     value={bookingTime}
                                     onChange={(e) => setBookingTime(e.target.value)}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-amber-500 focus:border-amber-500"
                                     required
                                 />
-                                <p className="text-xs text-gray-500 mt-1">You have a 30-minute grace period to check-in.</p>
+                                <p className="text-xs text-gray-500 mt-1">This will be the official start time of your parking session.</p>
                             </div>
                             <div className="mb-4">
                                 <label htmlFor="vehicleNumber" className="block text-sm font-medium text-gray-700 mb-1">Vehicle Number</label>
@@ -138,13 +108,13 @@ const BookSlotPage = () => {
                                     id="vehicleNumber"
                                     value={vehicleNumber}
                                     onChange={(e) => setVehicleNumber(e.target.value.toUpperCase())}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-amber-500 focus:border-amber-500"
                                     required
                                 />
                             </div>
-                            <div className="flex justify-end gap-4">
-                                <button type="button" onClick={() => setBookingModalOpen(false)} className="px-4 py-2 bg-gray-200 rounded-md">Cancel</button>
-                                <button type="submit" disabled={isSubmitting} className="px-6 py-2 bg-amber-500 text-white font-bold rounded-md">{isSubmitting ? "Booking..." : "Confirm Booking"}</button>
+                            <div className="flex justify-end gap-4 mt-6">
+                                <button type="button" onClick={() => setBookingModalOpen(false)} className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors">Cancel</button>
+                                <button type="submit" disabled={isSubmitting} className="px-6 py-2 bg-amber-500 text-white font-bold rounded-md hover:bg-amber-600 transition-colors disabled:bg-amber-300 disabled:cursor-not-allowed">{isSubmitting ? "Parking..." : "Confirm & Park"}</button>
                             </div>
                         </form>
                     </div>

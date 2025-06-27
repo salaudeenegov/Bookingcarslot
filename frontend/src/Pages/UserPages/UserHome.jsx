@@ -1,4 +1,3 @@
-// src/pages/UserHome.jsx
 import React, { useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { useParking } from '../../context/ParkingContext';
@@ -30,7 +29,7 @@ const ParkingTimer = ({ startTime }) => {
 
 const UserHome = () => {
     const { user } = useContext(AuthContext);
-     const { getActiveParkingSession, loading } = useParking();
+     const { getMyActiveParkingSession, loading } = useParking();
     const [activeSession, setActiveSession] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     console.log(user);
@@ -39,7 +38,7 @@ const UserHome = () => {
         if (user?.id) {
             const fetchActiveSession = async () => {
                 setIsLoading(true);
-                const session = await getActiveParkingSession(user.id);
+                const session = await getMyActiveParkingSession(user.id);
                 setActiveSession(session);
                 setIsLoading(false);
             };
@@ -47,7 +46,7 @@ const UserHome = () => {
         } else {
             setIsLoading(false);
         }
-    }, [user, getActiveParkingSession]);
+    }, [user, getMyActiveParkingSession]);
 
     if (loading || isLoading) {
         return <div className="text-center p-8">Loading your dashboard...</div>;

@@ -34,7 +34,6 @@ const UserProfile = () => {
           <h2 className="mt-4 text-3xl font-bold text-gray-800">{user.username}</h2>
           <p className="text-amber-700 font-semibold uppercase tracking-widest text-sm">{user.role}</p>
         </div>
-  {/* --- User Details Section --- */}
         <div className="p-8">
           <h3 className="text-lg font-semibold text-gray-700 mb-4 border-b pb-2">Contact Information</h3>
           <ul className="space-y-4 text-gray-600">

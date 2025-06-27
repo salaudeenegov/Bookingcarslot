@@ -35,7 +35,7 @@ const StatusBadge = ({ status }) => {
 
 const UserHistoryPage = () => {
     const { user } = useContext(AuthContext);
-    const { getBookingsForUser, loading: contextLoading } = useParking();
+    const { getMyBookings, loading: contextLoading } = useParking();
     const [history, setHistory] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -43,9 +43,7 @@ const UserHistoryPage = () => {
         if (user?.id) {
             const fetchHistory = async () => {
                 setIsLoading(true);
-                const userBookings = await getBookingsForUser(user.id);
-                
-                // Enrich booking data with slot and log details
+                const userBookings = (await getMyBookings(user.id)) || [];
                 const detailedHistory = await Promise.all(
                     userBookings.map(async (booking) => {
                         const slot = await db.slot.get(booking.slotId);
@@ -53,15 +51,13 @@ const UserHistoryPage = () => {
                         return { booking, slot, log: log || null }; 
                     })
                 );
-
-              
                 detailedHistory.sort((a, b) => new Date(b.booking.startTime) - new Date(a.booking.startTime));
                 setHistory(detailedHistory);
                 setIsLoading(false);
             };
             fetchHistory();
         }
-    }, [user, getBookingsForUser]);
+    }, [user, getMyBookings]);
 
     const formatDate = (dateString) => {
         if (!dateString) return '—';
