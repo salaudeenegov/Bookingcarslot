@@ -34,7 +34,7 @@ const steps = [
     label: "Contact & Vehicle",
     fields: [
       {
-        name: "vechilenumber",
+        name: "vehicleNumber", // changed from vechilenumber
         label: "Vehicle Number",
         type: "text",
         placeholder: "KA 51 MK 2002",
@@ -62,7 +62,7 @@ const RegisterPage = () => {
     password: "",
     confirmPassword: "",
     phone: "",
-    vechilenumber: "",
+    vehicleNumber: "",
   });
   const [step, setStep] = useState(0);
   const navigate = useNavigate();
@@ -99,7 +99,7 @@ const RegisterPage = () => {
     e.preventDefault();
     if (!validateStep()) return;
 
-    const { username, email, password, phone, vechilenumber } = formData;
+    const { username, email, password, phone, vehicleNumber } = formData; // changed from vechilenumber
     const existingUser = await db.user.where("email").equals(email).first();
     if (existingUser) {
       alert("User with this email already exists.");
@@ -114,7 +114,7 @@ const RegisterPage = () => {
       email,
      password: hashedpassword,
       phone,
-      vechilenumber,
+      vehicleNumber, 
       role: "user",
     });
 
@@ -125,7 +125,7 @@ const RegisterPage = () => {
   return (
     <div className="w-full h-screen flex items-center justify-center bg-gradient-to-br from-amber-100 via-amber-200 to-amber-300">
       <div className="flex flex-row w-4/5 h-4/5 rounded-3xl shadow-2xl overflow-hidden bg-white/80 backdrop-blur-md">
-        {/* Left Side */}
+ 
         <div className="hidden md:flex flex-col justify-center items-start w-1/2 bg-gradient-to-br from-amber-400 via-amber-300 to-amber-100 p-10">
           <h1 className="text-6xl font-extrabold text-white drop-shadow-lg mb-6 leading-tight">
             Your Spot,
@@ -137,7 +137,7 @@ const RegisterPage = () => {
           </p>
         </div>
 
-        {/* Right Side */}
+      
         <div className="flex w-full md:w-1/2 h-full items-center justify-center bg-white/90">
           <form
             onSubmit={handleSubmit}

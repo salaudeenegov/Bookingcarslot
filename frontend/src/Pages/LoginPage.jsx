@@ -1,14 +1,14 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { db } from "../db/db";
 import bcrypt from "bcryptjs";
-
+import { AuthContext } from "../context/AuthContext";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
-
+  const { login } = useContext(AuthContext);
   const handleLogin = async (e) => {
     e.preventDefault();
 
@@ -31,19 +31,13 @@ const LoginPage = () => {
         return;
       }
 
-  
-
-
-   
-   
-      localStorage.setItem(
-        "user",
-        JSON.stringify({
-          id: user.id,
-          email: user.email,
-          role: user.role,
-        })
-      );
+      const userData = {
+        id: user.id,
+        email: user.email,
+        role: user.role,
+        username: user.username, 
+      };
+      login(userData);
 
       alert("Login successful!");
       navigate("/home");
@@ -89,7 +83,7 @@ const LoginPage = () => {
               />
             </div>
 
-            {/* Password Input */}
+          
             <div className="flex flex-col gap-2">
               <label className="text-sm font-semibold text-gray-700">
                 Password
@@ -103,7 +97,7 @@ const LoginPage = () => {
               />
             </div>
 
-            {/* Links */}
+         
             <div className="flex justify-between text-xs text-gray-500">
               <a href="#" className="hover:underline text-amber-600">
                 Forgot password?
@@ -113,7 +107,7 @@ const LoginPage = () => {
               </Link>
             </div>
 
-            {/* Submit Button */}
+         
             <button
               type="submit"
               className="mt-2 bg-amber-500 hover:bg-amber-600 text-white font-bold py-2 rounded transition duration-200"
