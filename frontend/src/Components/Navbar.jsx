@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useContext } from "react";
 import { FaRegUserCircle } from "react-icons/fa";
 import { HiOutlineChevronDown, HiOutlineMenu, HiOutlineX } from "react-icons/hi"; 
-import { NavLink, Link } from "react-router-dom";
+import { NavLink, Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext"; 
 
 const Navbar = () => {
@@ -12,9 +12,15 @@ const Navbar = () => {
 
   const [isProfileOpen, setProfileOpen] = useState(false);
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const navigate=useNavigate();
   
   
   const profileRef = useRef(null);
+  const handleLogout=()=>
+  {
+    localStorage.clear();
+    navigate("/");
+  }
 
 
   useEffect(() => {
@@ -102,10 +108,10 @@ const Navbar = () => {
             
                 {isProfileOpen && (
                   <div className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 z-50">
-                    <Link to="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-amber-100">Your Profile</Link>
+                    <Link to="/home/user/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-amber-100">Your Profile</Link>
                     <Link to="/settings" className="block px-4 py-2 text-sm text-gray-700 hover:bg-amber-100">Settings</Link>
                     <div className="border-t border-gray-100 my-1"></div>
-                    <Link to="/" className="block px-4 py-2 text-sm text-gray-700 hover:bg-amber-100">Sign out</Link>
+                    <Link to="/" className="block px-4 py-2 text-sm text-gray-700 hover:bg-amber-100" onSubmit={handleLogout}>Sign out</Link>
                   </div>
                 )}
               </div>
@@ -145,7 +151,7 @@ const Navbar = () => {
               </div>
               <div className="mt-3 px-2 space-y-1">
                 <Link to="/profile" className="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:bg-amber-100">Your Profile</Link>
-                <Link to="/logout" className="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:bg-amber-100">Sign out</Link>
+                <Link to="/" className="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:bg-amber-100">Sign out</Link>
               </div>
           </div>
         </div>

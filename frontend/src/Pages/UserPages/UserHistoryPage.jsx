@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { useParking } from '../context/ParkingContext';
-import { AuthContext } from '../context/AuthContext';
-import { db } from '../db/db'; 
+import { useParking } from '../../context/ParkingContext';
+import { AuthContext } from '../../context/AuthContext';
+import { db } from '../../db/db'; 
 import { FiClock, FiCalendar, FiHash, FiCheckCircle, FiXCircle, FiAlertCircle, FiPower } from 'react-icons/fi';
 import { FaParking } from 'react-icons/fa';
 

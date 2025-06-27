@@ -1,6 +1,6 @@
 import React, { useState, useContext } from "react";
-import { useParking } from "../context/ParkingContext";
-import { AuthContext } from "../context/AuthContext.jsx";
+import { useParking } from "../../context/ParkingContext.jsx";
+import { AuthContext } from "../../context/AuthContext.jsx";
 
 
 const getSlotDisplayInfo = (slot, bookings, userId) => {

@@ -1,8 +1,8 @@
 // src/pages/UserHome.jsx
 import React, { useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
-import { useParking } from '../context/ParkingContext';
-import { AuthContext } from '../context/AuthContext';
+import { useParking } from '../../context/ParkingContext';
+import { AuthContext } from '../../context/AuthContext';
 import { FaCar, FaClock } from 'react-icons/fa';
 
 const formatDuration = (milliseconds) => {

@@ -7,10 +7,11 @@ import RegisterPage from "./Pages/RegisterPage";
 import Homelayout from "./Pages/Homelayout";
 import AdminDashboard from "./Pages/AdminDashboard";
 import StaffConsole from "./Pages/StaffConsole";
-import UserHome from "./Pages/UserHome";
-import UserProfile from "./Pages/UserProfile";
-import UserHistoryPage from "./Pages/UserHistoryPage";
-import BookSlotPage from "./Pages/BookSlotPage";
+import UserHome from "./Pages/UserPages/UserHome";
+import BookSlotPage from "./Pages/UserPages/BookSlotPage";
+import UserHistoryPage from "./Pages/UserPages/UserHistoryPage";
+import UserProfile from "./Pages/UserPages/UserProfile";
+
 
 
 const App = () => {
