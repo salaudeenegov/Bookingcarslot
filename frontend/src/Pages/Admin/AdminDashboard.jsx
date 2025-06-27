@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useParking } from '../context/ParkingContext';
+import { useParking } from '../../context/ParkingContext';
 
 const AdminDashboard = () => {
   const { slots, addSlots, loading } = useParking();
