@@ -99,7 +99,7 @@ const UserHistoryPage = () => {
                                 <tr>
                                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Slot</th>
                                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vehicle</th>
-                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Booking Time</th>
+
                                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actual Entry</th>
                                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actual Exit</th>
@@ -117,11 +117,10 @@ const UserHistoryPage = () => {
                                             </div>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{item.booking.vehicleNumber}</td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{formatDate(item.booking.startTime)}</td>
                                         <td className="px-6 py-4 whitespace-nowrap"><StatusBadge status={item.booking.status} /></td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{formatDate(item.log?.inTime)}</td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{formatDate(item.log?.outTime)}</td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{formatDuration(calculateDuration(item.log?.inTime, item.log?.outTime))}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{formatDate(item.booking.inTime)}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{formatDate(item.booking.outTime)}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{formatDuration(calculateDuration(item.booking.inTime, item.booking.outTime))}</td>
                                     </tr>
                                 ))}
                             </tbody>
