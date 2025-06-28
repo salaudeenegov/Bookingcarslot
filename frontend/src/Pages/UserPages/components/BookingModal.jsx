@@ -1,26 +1,37 @@
-import React, { useState } from "react";
-import { useParking } from "./ParkingContext";
+import React, { useEffect, useState } from "react";
+import { useParking } from "../../../context/ParkingContext";
 
 const BookingModal = ({ onClose, selectedSlot }) => {
   const [vehicleNumber, setVehicleNumber] = useState("");
   const [bookingTime, setBookingTime] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const bookSlot = useParking();
+
+  const { bookSlot } = useParking();
+
+  useEffect(() => {
+    
+    const now = new Date();
+    const offset = now.getTimezoneOffset();
+    const localDate = new Date(now.getTime() - offset * 60 * 1000);
+    setBookingTime(localDate.toISOString().slice(0, 16));
+
+    
+  }, []);
 
   const handleBookingSubmit = async (e) => {
     e.preventDefault();
     if (!vehicleNumber || !bookingTime) {
-      alert("Vehicle number and booking time are required.");
+      alert("Vehicle number and parking time are required.");
       return;
     }
     setIsSubmitting(true);
     const result = await bookSlot(selectedSlot.id, vehicleNumber, bookingTime);
     if (result.success) {
-      alert(`Slot ${selectedSlot.number} booked successfully!`);
+      alert(`Slot ${selectedSlot.number} is now occupied successfully!`);
       onClose();
     } else {
-      alert(`Booking failed: ${result.error}`);
+      alert(`Failed: ${result.error}`);
     }
     setIsSubmitting(false);
   };
@@ -69,7 +80,7 @@ const BookingModal = ({ onClose, selectedSlot }) => {
           <div className="flex justify-end gap-4">
             <button
               type="button"
-              onClick={() => setBookingModalOpen(false)}
+              onClick={onClose} 
               className="px-4 py-2 bg-gray-200 rounded-md"
             >
               Cancel

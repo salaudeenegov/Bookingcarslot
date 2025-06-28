@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { db } from "../db/db";
 import bcrypt from "bcryptjs";
 import { AuthContext } from "../context/AuthContext";
+import image from "../assets/aps5.jpg"
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -53,7 +54,7 @@ const LoginPage = () => {
         {/* Left Image */}
         <div className="left w-1/2 h-full hidden md:block">
           <img
-            src="https://blog.getmyparking.com/wp-content/uploads/2017/08/aps5.jpg"
+            src={image}
             alt="Car Parking"
             className="w-full h-full object-cover"
           />
