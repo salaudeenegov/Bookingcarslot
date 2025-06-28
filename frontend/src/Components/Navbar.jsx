@@ -67,14 +67,8 @@ const Navbar = () => {
         )}
         {role === "employee" && (
           <>
-            <NavLink to="/slots" className={linkClasses}>
+            <NavLink to="/home/staff" className={linkClasses}>
               Slot View
-            </NavLink>
-            <NavLink to="/exit" className={linkClasses}>
-              Manage Exit
-            </NavLink>
-            <NavLink to="/history" className={linkClasses}>
-              Logs
             </NavLink>
           </>
         )}
