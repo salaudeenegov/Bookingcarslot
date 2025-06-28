@@ -9,6 +9,7 @@ const ParkingContext = createContext();
 
 const initialState = {
   slots: [],
+  users: [],
   bookings: [],
   logs: [],
   loading: true,
@@ -53,12 +54,13 @@ export const ParkingProvider = ({ children }) => {
   const fetchData = useCallback(async () => {
     dispatch({ type: "SET_LOADING" });
     try {
-      const [slots, bookings, logs] = await Promise.all([
+      const [slots, bookings, logs, users] = await Promise.all([
         db.slot.toArray(),
         db.bookings.toArray(),
-        db.logs.orderBy("inTime").reverse().toArray()
+        db.logs.orderBy("inTime").reverse().toArray(),
+        db.user.toArray(), 
       ]);
-      dispatch({ type: "SET_DATA", payload: { slots, bookings, logs } });
+      dispatch({ type: "SET_DATA", payload: { slots, bookings, logs, users } });
     } catch (err) {
       dispatch({ type: "SET_ERROR", payload: err.message });
     }

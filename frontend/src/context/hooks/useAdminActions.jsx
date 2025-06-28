@@ -1,11 +1,32 @@
 import { db } from "../../db/db";
 import { useEmployeeActions } from './useEmployeeActions';
+import bcrypt from "bcryptjs";
 
 export const useAdminActions = (user, fetchData) => {
   const employeeActions = useEmployeeActions(user, fetchData);
 
   const checkPermissions = () => {
     return user && user.role === 'admin';
+  };
+
+
+  const addUser = async (userData) => {
+    checkPermissions();
+    try {
+     
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(userData.password, salt);
+      
+      await db.user.add({
+        ...userData,
+        password: hashedPassword,
+      });
+      await fetchData();
+    } catch (error) {
+      console.error("Failed to add user:", error);
+   
+      throw error;
+    }
   };
 
   const addSlot = async (slotData) => {
@@ -52,6 +73,19 @@ export const useAdminActions = (user, fetchData) => {
       return { success: false, error: err.message };
     }
   };
+    const updateUser = async (userId, updatedData) => {
+    checkPermissions();
+    try {
+      // Don't update the password this way unless it's a password-reset form
+      // This example just updates non-sensitive info
+      const { password, ...dataToUpdate } = updatedData;
+      await db.user.update(userId, dataToUpdate);
+      await fetchData(); // Refresh data
+    } catch (error) {
+      console.error("Failed to update user:", error);
+      throw error;
+    }
+  };
 
   const getStat = async () => {
     if (!checkPermissions()) return { success: false, error: "Unauthorized" };
@@ -87,6 +121,22 @@ export const useAdminActions = (user, fetchData) => {
       return { success: false, error: error.message };
     }
   };
+
+   const deleteUser = async (userId) => {
+    checkPermissions();
+    try {
+      // Add safety check: don't let an admin delete themselves
+      if (user.id === userId) {
+        throw new Error("Admin cannot delete their own account.");
+      }
+      await db.user.delete(userId);
+      await fetchData(); // Refresh data
+    } catch (error) {
+      console.error("Failed to delete user:", error);
+      throw error;
+    }
+  };
+  
 
   const getAllUsers = async () => {
     if (!checkPermissions()) return { success: false, error: "Unauthorized" };
@@ -131,6 +181,9 @@ export const useAdminActions = (user, fetchData) => {
     getStat,
     getAllLogsDetailed,
     getAllUsers,
-    forceExit
+    forceExit,
+    addUser,
+    updateUser,
+    deleteUser
   };
 };
