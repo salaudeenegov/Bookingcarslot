@@ -126,6 +126,7 @@ const StaffConsole = () => {
   // Handler to process the drive-in data from the modal
   const handleAssignDriveIn = async (driveInData) => {
     if (!selectedSlotId) return;
+    console.log(driveInData);
     const result = await assignDriveInVehicle(selectedSlotId, driveInData);
     if (result.success) {
       setIsModalOpen(false);

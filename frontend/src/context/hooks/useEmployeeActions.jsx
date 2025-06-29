@@ -118,41 +118,32 @@ export const useEmployeeActions = (user, fetchData) => {
       return { success: false, error: error.message };
     }
   };
-  const assignDriveInVehicle = async (slotId, driveInData) => {
-    checkPermissions();
+ const assignDriveInVehicle = async (slotId, driveInData) => {
+  checkPermissions();
+  console.log("trigger");
+  const { vehicleNumber, driverName, phone } = driveInData;
+  if (!vehicleNumber) {
+    throw new Error("Vehicle number is required for a drive-in.");
+  }
 
-    const { vehicleNumber, driverName, phone } = driveInData;
-    if (!vehicleNumber) {
-      throw new Error("Vehicle number is required for a drive-in.");
-    }
+  try {
+    const salt = await bcrypt.genSalt(5);
+    const tempPassword = await bcrypt.hash(`guest-${Date.now()}`, salt);
+    const inTime = new Date();
 
-    try {
-      const salt = await bcrypt.genSalt(5);
-      const tempPassword = await bcrypt.hash(`guest-${Date.now()}`, salt);
-      const inTime = new Date();
+    const guestUser = {
+      username:
+        driverName ||
+        `Guest-${vehicleNumber.replace(/\s/g, "")}-${Date.now()}`,
+      email: `guest_${Date.now()}@parking.local`,
+      phone: phone || "",
+      vehicleNumber: vehicleNumber,
+      password: tempPassword,
+      role: "guest",
+    };
+    
 
-      // Check if this vehicle already has an active booking
-      const existingActiveBooking = await db.bookings
-        .where({ vehicleNumber, status: "active" })
-        .first();
-      if (existingActiveBooking) {
-        throw new Error(
-          "This vehicle already has an active booking. Please exit the previous booking first."
-        );
-      }
-
-      const guestUser = {
-        username:
-          driverName ||
-          `Guest-${vehicleNumber.replace(/\s/g, "")}-${Date.now()}`,
-        email: `guest_${Date.now()}@parking.local`,
-        phone: phone || "",
-        vehicleNumber: vehicleNumber,
-        password: tempPassword,
-        role: "guest",
-      };
-
-      await db.transaction("rw", db.user, db.slot, db.bookings, async () => {
+    await db.transaction("rw", db.user, db.slot, db.bookings, db.logs, async () => {
         const slot = await db.slot.get(slotId);
         if (slot.status !== "available") {
           throw new Error("This slot is no longer available.");
@@ -170,6 +161,7 @@ export const useEmployeeActions = (user, fetchData) => {
         };
         const newBookingId = await db.bookings.add(newBooking);
 
+      
         await db.logs.add({
           userId: guestUserId,
           vehicleNumber: vehicleNumber,
@@ -187,15 +179,17 @@ export const useEmployeeActions = (user, fetchData) => {
           inTime: inTime,
           currentBookingId: newBookingId,
         });
-      });
+      }
+    );
 
-      await fetchData();
-      return { success: true };
-    } catch (error) {
-      console.error("Failed to assign drive-in vehicle:", error);
-      return { success: false, error: error.message };
-    }
-  };
+    await fetchData();
+    return { success: true };
+  } catch (error) {
+
+    console.error("Failed to assign drive-in vehicle:", error);
+    return { success: false, error: error.message };
+  }
+};
 
   return { getSlotDetails, markVehicleExit, assignDriveInVehicle };
 };
