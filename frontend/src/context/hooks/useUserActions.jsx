@@ -66,13 +66,16 @@ export const useUserActions = (user, fetchData) => {
         .where("[userId+status]")
         .equals([user.id, "active"])
         .first();
+      console.log(" activeBooking:", activeBooking);
       if (!activeBooking) return null;
       const slot = activeBooking.slotId
         ? await db.slot.get(activeBooking.slotId)
         : null;
-      const log = await db.logs
-        .where({ bookingId: activeBooking.id, outTime: null })
-        .first();
+      console.log(" slot:", slot);
+
+      const logs = await db.logs.where({ bookingId: activeBooking.id }).toArray();
+      const log = logs.find(l => l.outTime == null);
+      console.log("log:", log);
       if (!slot || !log) return null;
       return { booking: activeBooking, slot, log };
     } catch (error) {

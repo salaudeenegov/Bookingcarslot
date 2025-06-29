@@ -3,9 +3,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { db } from "../db/db";
 import bcrypt from "bcryptjs";
 
-
-
-
 const steps = [
   {
     label: "Account Info",
@@ -34,7 +31,7 @@ const steps = [
     label: "Contact & Vehicle",
     fields: [
       {
-        name: "vehicleNumber", // changed from vechilenumber
+        name: "vehicleNumber",
         label: "Vehicle Number",
         type: "text",
         placeholder: "KA 51 MK 2002",
@@ -76,21 +73,19 @@ const RegisterPage = () => {
 
   const validateStep = () => {
     const currentFields = steps[step].fields;
-    for (let field of currentFields) {
+    for (const field of currentFields) {
       if (!formData[field.name]) {
-        alert(`Please fill in ${field.label}.`);
+        alert(`Please fill in the "${field.label}" field.`);
         return false;
       }
-    }
-    if (step === 0 && formData.password !== formData.confirmPassword) {
-      alert("Passwords do not match.");
-      return false;
     }
     return true;
   };
 
   const handleNext = () => {
-    if (validateStep()) setStep((s) => s + 1);
+    if (validateStep()) {
+      setStep((s) => s + 1);
+    }
   };
 
   const handleBack = () => setStep((s) => s - 1);
@@ -99,33 +94,44 @@ const RegisterPage = () => {
     e.preventDefault();
     if (!validateStep()) return;
 
-    const { username, email, password, phone, vehicleNumber } = formData; // changed from vechilenumber
-    const existingUser = await db.user.where("email").equals(email).first();
-    if (existingUser) {
-      alert("User with this email already exists.");
+    const { username, email, password, confirmPassword, phone, vehicleNumber } =
+      formData;
+
+    if (password !== confirmPassword) {
+      alert("Passwords do not match. Please go back and correct them.");
       return;
     }
-  const salt = await bcrypt.genSalt(10);
-    const hashedpassword =  await bcrypt.hash(password, salt);
-   
 
-    await db.user.add({
-      username,
-      email,
-     password: hashedpassword,
-      phone,
-      vehicleNumber, 
-      role: "user",
-    });
+    const existingUser = await db.user.where("email").equals(email).first();
+    if (existingUser) {
+      alert("A user with this email address already exists.");
+      return;
+    }
 
-    alert("Registration successful!");
-    navigate("/");
+    try {
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(password, salt);
+
+      await db.user.add({
+        username,
+        email,
+        password: hashedPassword,
+        phone,
+        vehicleNumber,
+        role: "user",
+      });
+
+      alert("Registration successful! You can now log in.");
+      navigate("/");
+    } catch (error) {
+      console.error("Registration failed:", error);
+      alert("An error occurred during registration. Please try again.");
+    }
   };
 
   return (
     <div className="w-full h-screen flex items-center justify-center bg-gradient-to-br from-amber-100 via-amber-200 to-amber-300">
       <div className="flex flex-row w-4/5 h-4/5 rounded-3xl shadow-2xl overflow-hidden bg-white/80 backdrop-blur-md">
- 
         <div className="hidden md:flex flex-col justify-center items-start w-1/2 bg-gradient-to-br from-amber-400 via-amber-300 to-amber-100 p-10">
           <h1 className="text-6xl font-extrabold text-white drop-shadow-lg mb-6 leading-tight">
             Your Spot,
@@ -137,7 +143,6 @@ const RegisterPage = () => {
           </p>
         </div>
 
-      
         <div className="flex w-full md:w-1/2 h-full items-center justify-center bg-white/90">
           <form
             onSubmit={handleSubmit}
@@ -176,6 +181,7 @@ const RegisterPage = () => {
                   onChange={handleChange}
                   placeholder={field.placeholder}
                   className="px-4 py-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-400 transition"
+                  required
                 />
               </div>
             ))}
@@ -184,12 +190,12 @@ const RegisterPage = () => {
                 Already have an account?
               </Link>
             </div>
-            <div className="flex gap-2 mt-4">
+            <div className="flex gap-4 mt-4">
               {step > 0 && (
                 <button
                   type="button"
                   onClick={handleBack}
-                  className="bg-gray-200 text-gray-700 font-bold py-3 rounded-xl shadow transition w-1/2"
+                  className="bg-gray-200 text-gray-700 font-bold py-3 rounded-xl shadow transition w-full"
                 >
                   Back
                 </button>
