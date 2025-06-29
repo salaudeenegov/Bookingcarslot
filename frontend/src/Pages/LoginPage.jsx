@@ -36,6 +36,7 @@ const LoginPage = () => {
         id: user.id,
         email: user.email,
         role: user.role,
+        vehicleNumber:user.vehicleNumber,
         username: user.username, 
       };
       login(userData);

@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useParking } from "../../../context/ParkingContext";
+import { AuthContext } from "../../../context/AuthContext";
 
 const BookingModal = ({ onClose, selectedSlot }) => {
   const [vehicleNumber, setVehicleNumber] = useState("");
@@ -8,6 +9,7 @@ const BookingModal = ({ onClose, selectedSlot }) => {
 
 
   const { bookSlot } = useParking();
+  const {user}=useContext( AuthContext);
 
   useEffect(() => {
     
@@ -15,6 +17,7 @@ const BookingModal = ({ onClose, selectedSlot }) => {
     const offset = now.getTimezoneOffset();
     const localDate = new Date(now.getTime() - offset * 60 * 1000);
     setBookingTime(localDate.toISOString().slice(0, 16));
+    setVehicleNumber(user.vehicleNumber);
 
     
   }, []);
