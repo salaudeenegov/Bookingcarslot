@@ -5,10 +5,13 @@ import {
   FaEnvelope, FaPhone, FaHashtag, FaEllipsisV, FaSignOutAlt, FaWrench, FaTrash, FaCheckCircle
 } from "react-icons/fa";
 import StatCard from "./components/StatCard";
+import DailyActivityChart from "./components/DailyActivityChart";
+import ActiveVehiclesList from "./components/ActiveVehiclesList";
 
 const AdminDashboard = () => {
   const { 
     loading, 
+    
     addSlot, 
     getStat, 
     getSlotDetails, 
@@ -24,6 +27,7 @@ const AdminDashboard = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [actionMenuSlotId, setActionMenuSlotId] = useState(null);
+    const [occupiedSlots, setOccupiedSlots] = useState([]); 
   const menuRef = useRef(null);
 
   const loadData = async () => {
@@ -31,6 +35,7 @@ const AdminDashboard = () => {
     const slotsRes = await getSlotDetails();
     if (statsRes) setAnalytics(statsRes);
     if (slotsRes && slotsRes.slots) setSlotsData(slotsRes.slots);
+    setOccupiedSlots(slotsRes.occupiedSlots);
   };
 
   useEffect(() => {
@@ -101,11 +106,19 @@ const AdminDashboard = () => {
     <div className="p-4 md:p-8 bg-gray-50 min-h-screen">
       <h1 className="text-3xl font-bold text-gray-800 mb-6">Admin Dashboard</h1>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
         <StatCard icon={<FaParking />} title="Total Slots" value={analytics.totalSlots ?? '...'} color="text-blue-500" />
         <StatCard icon={<FaCar />} title="Occupied Slots" value={analytics.occupiedSlots ?? '...'} color="text-red-500" />
         <StatCard icon={<FaCarSide />} title="Available Slots" value={analytics.nonOccupiedSlots ?? '...'} color="text-green-500" />
+        <StatCard icon={<FaCar />} title="Parks Today" value={analytics.parksToday ?? '...'} color="text-amber-500" />
+        <StatCard icon={<FaRegClock />} title="Avg. Park Time" value={analytics.avgParkingDuration ?? '...'} color="text-purple-500" />
       </div>
+
+         {analytics.chartData && (
+        <div className="bg-white p-6 rounded-xl shadow-lg">
+          <DailyActivityChart chartData={analytics.chartData} />
+        </div>
+      )}
 
       <div className="bg-white p-6 rounded-xl shadow-lg">
         <div className="flex flex-col md:flex-row justify-between items-center border-b pb-4 mb-6">
@@ -185,6 +198,7 @@ const AdminDashboard = () => {
           </div>
         </div>
       )}
+        <ActiveVehiclesList occupiedSlots={occupiedSlots} />
     </div>
   );
 };

@@ -87,14 +87,98 @@ export const useAdminActions = (user, fetchData) => {
     }
   };
 
-  const getStat = async () => {
+    const getStat = async () => {
     if (!checkPermissions()) return { success: false, error: "Unauthorized" };
     try {
+      // --- Basic Stats (from `slot` table - no change here) ---
       const totalSlots = await db.slot.count();
       const occupiedSlots = await db.slot.where("status").equals("occupied").count();
       const nonOccupiedSlots = totalSlots - occupiedSlots;
-      return { success: true, totalSlots, occupiedSlots, nonOccupiedSlots };
+
+
+      
+
+      const toLocalDateString = (date) => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      };
+
+
+      const allBookings = await db.bookings.toArray();
+      const today = new Date();
+      const todayStr = toLocalDateString(today); 
+      
+      const uniqueVehiclesToday = new Set();
+      let totalDuration = 0;
+      let completedBookingsCount = 0;
+      
+      const dailyUniqueVehicleSets = new Map();
+      const chartLabels = [];
+
+      for (let i = 6; i >= 0; i--) {
+        const d = new Date();
+        d.setDate(d.getDate() - i);
+     
+        dailyUniqueVehicleSets.set(toLocalDateString(d), new Set());
+        chartLabels.push(d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+      }
+
+      // 2. Process all bookings in a single loop
+      allBookings.forEach(booking => {
+        if (!booking.inTime || !booking.vehicleNumber) return; 
+
+        const inTimeDate = new Date(booking.inTime);
+        const logDateStr = toLocalDateString(inTimeDate); 
+
+     
+        if (dailyUniqueVehicleSets.has(logDateStr)) {
+          dailyUniqueVehicleSets.get(logDateStr).add(booking.vehicleNumber);
+        }
+
+    
+        if (logDateStr === todayStr) {
+          uniqueVehiclesToday.add(booking.vehicleNumber);
+        }
+
+   
+        if (booking.outTime) {
+          totalDuration += new Date(booking.outTime).getTime() - new Date(booking.inTime).getTime();
+          completedBookingsCount++;
+        }
+      });
+      
+      // 3. Finalize calculations
+      const parksToday = uniqueVehiclesToday.size;
+
+      let avgParkingDuration = "N/A";
+      if (completedBookingsCount > 0) {
+        const avgMilliseconds = totalDuration / completedBookingsCount;
+        const hours = Math.floor(avgMilliseconds / 3600000);
+        const minutes = Math.floor((avgMilliseconds % 3600000) / 60000);
+        avgParkingDuration = `${hours}h ${minutes}m`;
+      }
+      
+      const chartDataPoints = Array.from(dailyUniqueVehicleSets.values())
+                                   .map(vehicleSet => vehicleSet.size);
+
+      const chartData = {
+          labels: chartLabels,
+          data: chartDataPoints,
+      };
+
+      return { 
+        success: true, 
+        totalSlots, 
+        occupiedSlots, 
+        nonOccupiedSlots,
+        parksToday,
+        avgParkingDuration,
+        chartData,
+      };
     } catch (error) {
+      console.error("Error in getStat:", error);
       return { success: false, error: error.message };
     }
   };
@@ -151,6 +235,38 @@ export const useAdminActions = (user, fetchData) => {
       return { success: false, error: err.message };
     }
   };
+
+   const getSlotDetails = async () => {
+    try {
+      const slotsFromDb = await db.slot.toArray();
+      
+      const allSlots = await Promise.all(
+        slotsFromDb.map(async (slot) => {
+          let userInfo = null;
+          if (slot.status === 'occupied' && slot.userId) {
+            userInfo = await db.user.get(slot.userId);
+          }
+       
+          return { ...slot, user: userInfo };
+        })
+      );
+
+      const occupiedSlots = allSlots.filter(
+        slot => slot.status === 'occupied'
+      );
+      
+
+      return { 
+        success: true, 
+        slots: allSlots,       
+        occupiedSlots: occupiedSlots 
+      };
+
+    } catch (error) {
+      console.error("Failed to get slot details:", error);
+      return { success: false, error: error.message, slots: [], occupiedSlots: [] };
+    }
+  };
     const forceExit = async (slotId) => {
     if (!checkPermissions()) return { success: false, error: "Unauthorized" };
     try {
@@ -184,6 +300,7 @@ export const useAdminActions = (user, fetchData) => {
     forceExit,
     addUser,
     updateUser,
-    deleteUser
+    deleteUser,
+    getSlotDetails
   };
 };

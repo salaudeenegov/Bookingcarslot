@@ -43,7 +43,6 @@ export const ParkingProvider = ({ children }) => {
         await db.user.bulkAdd([
           { email: "admin@gmail.com", username: "admin", password: hashedpassword, phone: "111-222-3333", vehicleNumber: "ADMIN", role: "admin" },
           { email: "employee@gmail.com", username: "employee", password: hashedpassword, phone: "444-555-6666", vehicleNumber: "STAFF", role: "employee" },
-          { email: "user@gmail.com", username: "user", password: hashedpassword, phone: "777-888-9999", vehicleNumber: "USER-123", role: "user" },
         ]);
       }
     } catch (err) {
