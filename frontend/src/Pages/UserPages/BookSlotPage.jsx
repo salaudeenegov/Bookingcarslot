@@ -15,7 +15,15 @@ const getSlotDisplayInfo = (slot, userId) => {
       isClickable: false,
     };
   }
-
+  if (slot.status === "maintenance") {
+    return {
+      status: "maintenance",
+      className:
+        "bg-purple-200 text-purple-800 opacity-70 cursor-not-allowed border-2 border-purple-400",
+      text: "Under Maintenance",
+      isClickable: false,
+    };
+  }
   return {
     status: "available",
     className: "bg-green-200 hover:bg-green-300 cursor-pointer",
@@ -31,7 +39,6 @@ const BookSlotPage = () => {
   const [isBookingModalOpen, setBookingModalOpen] = useState(false);
   const [selectedSlot, setSelectedSlot] = useState(null);
 
-
   const handleSlotClick = (slot) => {
     const displayInfo = getSlotDisplayInfo(slot, user?.id);
     if (!displayInfo.isClickable) return;
@@ -42,8 +49,6 @@ const BookSlotPage = () => {
       setBookingModalOpen(true);
     }
   };
-
- 
 
   if (loading)
     return (

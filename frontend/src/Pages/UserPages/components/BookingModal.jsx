@@ -41,6 +41,12 @@ const BookingModal = ({ onClose, selectedSlot }) => {
         <h2 className="text-2xl font-bold mb-4">
           Book Slot {selectedSlot?.number}
         </h2>
+        {selectedSlot?.status === 'maintenance' ? (
+          <div className="text-center text-purple-700 font-semibold text-lg my-8">
+            This slot is currently <span className="font-bold">under maintenance</span> and cannot be booked.
+            <button onClick={onClose} className="mt-6 px-4 py-2 bg-gray-200 rounded-md">Close</button>
+          </div>
+        ) : (
         <form onSubmit={handleBookingSubmit}>
           <div className="mb-4">
             <label
@@ -94,6 +100,7 @@ const BookingModal = ({ onClose, selectedSlot }) => {
             </button>
           </div>
         </form>
+        )}
       </div>
     </div>
   );

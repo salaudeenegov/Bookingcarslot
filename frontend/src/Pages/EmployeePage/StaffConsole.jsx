@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParking } from '../../context/ParkingContext'; 
-import { FaCar, FaUser, FaClock, FaPlusCircle, FaSpinner } from 'react-icons/fa';
+import { FaCar, FaUser, FaClock, FaPlusCircle, FaSpinner, FaWrench } from 'react-icons/fa';
 
 
 const DriveInFormModal = ({ onSave, onCancel }) => {
@@ -100,7 +100,7 @@ const StaffConsole = () => {
     setIsLoading(false);
   }, [getSlotDetails]);
 
-  // Effect to run on initial mount and whenever global slot data changes
+  
   useEffect(() => {
     fetchDetails();
   }, [fetchDetails, globalSlots]); 
@@ -169,7 +169,9 @@ const StaffConsole = () => {
             className={`rounded-lg shadow-lg p-4 flex flex-col justify-between transition-all duration-300 ${
               slot.status === 'occupied'
                 ? 'bg-orange-100 border-2 border-orange-300'
-                : 'bg-green-100 border-2 border-green-300 hover:shadow-xl hover:border-green-400'
+                : slot.status === 'maintenance'
+                  ? 'bg-purple-100 border-2 border-purple-400 opacity-70'
+                  : 'bg-green-100 border-2 border-green-300 hover:shadow-xl hover:border-green-400'
             }`}
           >
             <div>
@@ -181,6 +183,16 @@ const StaffConsole = () => {
                   <p className="flex items-center gap-2 font-semibold"><FaUser className="text-blue-500 flex-shrink-0" /> <span>{slot.user?.username || 'N/A'}</span></p>
                   <p className="flex items-center gap-2"><FaCar className="text-gray-700 flex-shrink-0" /> {slot.currentVehicle || 'N/A'}</p>
                   <p className="flex items-center gap-2"><FaClock className="text-teal-600 flex-shrink-0" /> {new Date(slot.inTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
+                </div>
+              ) : slot.status === 'maintenance' ? (
+                <div className="text-center mt-8">
+                  <p className="text-purple-700 font-semibold mb-4 text-lg">Under Maintenance</p>
+                  <button
+                    disabled
+                    className="w-full py-2 px-2 bg-gray-400 text-white font-bold rounded-lg cursor-not-allowed flex items-center justify-center gap-2 opacity-60"
+                  >
+                    <FaWrench /> Not Available
+                  </button>
                 </div>
               ) : (
                 <div className="text-center mt-8">
