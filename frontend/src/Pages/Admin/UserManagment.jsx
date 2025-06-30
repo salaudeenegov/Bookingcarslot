@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useParking } from '../../context/ParkingContext'; 
 import UserFormModal from "./components/UserFormModal"
+import Swal from 'sweetalert2';
 
 
 
@@ -24,7 +25,11 @@ const UserManagement = () => {
       try {
         await deleteUser(userId);
       } catch (err) {
-        alert(err.message); // Display error from the hook
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: err.message
+        }); // Display error from the hook
       }
     }
   };
@@ -39,7 +44,11 @@ const UserManagement = () => {
       setIsModalOpen(false);
       setEditingUser(null);
     } catch (err) {
-      alert(`Operation failed: ${err.message}`);
+      Swal.fire({
+        icon: 'error',
+        title: 'Operation Failed',
+        text: `Operation failed: ${err.message}`
+      });
     }
   };
 

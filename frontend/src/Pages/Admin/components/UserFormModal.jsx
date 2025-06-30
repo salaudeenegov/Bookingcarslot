@@ -1,4 +1,5 @@
 import React,{ useState } from "react";
+import Swal from 'sweetalert2';
 
 const UserFormModal = ({ userToEdit, onSave, onCancel }) => {
   const isEditing = !!userToEdit;
@@ -18,7 +19,11 @@ const UserFormModal = ({ userToEdit, onSave, onCancel }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!isEditing && !formData.password) {
-      alert('Password is required for new users.');
+      Swal.fire({
+        icon: 'warning',
+        title: 'Missing Password',
+        text: 'Password is required for new users.'
+      });
       return;
     }
     onSave(formData);

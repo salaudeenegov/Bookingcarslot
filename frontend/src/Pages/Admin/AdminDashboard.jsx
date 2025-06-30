@@ -7,11 +7,11 @@ import {
 import StatCard from "./components/StatCard";
 import DailyActivityChart from "./components/DailyActivityChart";
 import ActiveVehiclesList from "./components/ActiveVehiclesList";
+import Swal from 'sweetalert2';
 
 const AdminDashboard = () => {
   const { 
     loading, 
-    
     addSlot, 
     getStat, 
     getSlotDetails, 
@@ -54,15 +54,27 @@ const AdminDashboard = () => {
 
   const handleAddSlots = async (e) => {
     e.preventDefault();
-    if (numSlotsToAdd < 1) return alert("Please enter a positive number.");
+    if (numSlotsToAdd < 1) return Swal.fire({
+      icon: 'warning',
+      title: 'Invalid Number',
+      text: 'Please enter a positive number.'
+    });
     setIsSubmitting(true);
     const result = await addSlot({ count: parseInt(numSlotsToAdd, 10) });
     if (result.success) {
-      alert(`${numSlotsToAdd} slot(s) added successfully!`);
+      Swal.fire({
+        icon: 'success',
+        title: 'Slots Added',
+        text: `${numSlotsToAdd} slot(s) added successfully!`
+      });
       setNumSlotsToAdd(1);
       await loadData();
     } else {
-      alert(`Failed to add slots: ${result.error}`);
+      Swal.fire({
+        icon: 'error',
+        title: 'Failed',
+        text: `Failed to add slots: ${result.error}`
+      });
     }
     setIsSubmitting(false);
   };
@@ -71,21 +83,33 @@ const AdminDashboard = () => {
     setActionMenuSlotId(null);
     if (window.confirm("Are you sure you want to force check-out this vehicle? This action cannot be undone.")) {
       const result = await forceExit(slotId);
-      if (!result.success) alert(`Error: ${result.error}`);
+      if (!result.success) Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: `Error: ${result.error}`
+      });
     }
   };
 
   const handleSetStatus = async (slotId, status) => {
     setActionMenuSlotId(null);
     const result = await updateSlotStatus(slotId, status);
-    if (!result.success) alert(`Error: ${result.error}`);
+    if (!result.success) Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: `Error: ${result.error}`
+    });
   };
 
   const handleRemoveSlot = async (slotId) => {
     setActionMenuSlotId(null);
     if (window.confirm("Are you sure you want to permanently delete this slot?")) {
         const result = await removeSlot(slotId);
-        if (!result.success) alert(`Error: ${result.error}`);
+        if (!result.success) Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: `Error: ${result.error}`
+        });
     }
   };
 

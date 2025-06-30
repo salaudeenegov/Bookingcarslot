@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { db } from "../db/db";
 import bcrypt from "bcryptjs";
+import Swal from "sweetalert2";
 
 const steps = [
   {
@@ -75,7 +76,11 @@ const RegisterPage = () => {
     const currentFields = steps[step].fields;
     for (const field of currentFields) {
       if (!formData[field.name]) {
-        alert(`Please fill in the "${field.label}" field.`);
+        Swal.fire({
+          icon: "warning",
+          title: "Missing Field",
+          text: `Please fill in the "${field.label}" field.`,
+        });
         return false;
       }
     }
@@ -98,13 +103,21 @@ const RegisterPage = () => {
       formData;
 
     if (password !== confirmPassword) {
-      alert("Passwords do not match. Please go back and correct them.");
+      Swal.fire({
+        icon: "error",
+        title: "Password Mismatch",
+        text: "Passwords do not match. Please go back and correct them.",
+      });
       return;
     }
 
     const existingUser = await db.user.where("email").equals(email).first();
     if (existingUser) {
-      alert("A user with this email address already exists.");
+      Swal.fire({
+        icon: "error",
+        title: "Duplicate Email",
+        text: "A user with this email address already exists.",
+      });
       return;
     }
 
@@ -121,11 +134,19 @@ const RegisterPage = () => {
         role: "user",
       });
 
-      alert("Registration successful! You can now log in.");
+      Swal.fire({
+        icon: "success",
+        title: "Registration Successful",
+        text: "Registration successful! You can now log in.",
+      });
       navigate("/");
     } catch (error) {
       console.error("Registration failed:", error);
-      alert("An error occurred during registration. Please try again.");
+      Swal.fire({
+        icon: "error",
+        title: "Registration Error",
+        text: "An error occurred during registration. Please try again.",
+      });
     }
   };
 

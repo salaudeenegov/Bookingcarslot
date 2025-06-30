@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useParking } from "../../../context/ParkingContext";
 import { AuthContext } from "../../../context/AuthContext";
+import Swal from 'sweetalert2';
 
 const BookingModal = ({ onClose, selectedSlot }) => {
   const [vehicleNumber, setVehicleNumber] = useState("");
@@ -25,16 +26,28 @@ const BookingModal = ({ onClose, selectedSlot }) => {
   const handleBookingSubmit = async (e) => {
     e.preventDefault();
     if (!vehicleNumber || !bookingTime) {
-      alert("Vehicle number and parking time are required.");
+      Swal.fire({
+        icon: 'warning',
+        title: 'Missing Information',
+        text: 'Vehicle number and parking time are required.'
+      });
       return;
     }
     setIsSubmitting(true);
     const result = await bookSlot(selectedSlot.id, vehicleNumber, bookingTime);
     if (result.success) {
-      alert(`Slot ${selectedSlot.number} is now occupied successfully!`);
+      Swal.fire({
+        icon: 'success',
+        title: 'Slot Occupied',
+        text: `Slot ${selectedSlot.number} is now occupied successfully!`
+      });
       onClose();
     } else {
-      alert(`Failed: ${result.error}`);
+      Swal.fire({
+        icon: 'error',
+        title: 'Failed',
+        text: `Failed: ${result.error}`
+      });
     }
     setIsSubmitting(false);
   };

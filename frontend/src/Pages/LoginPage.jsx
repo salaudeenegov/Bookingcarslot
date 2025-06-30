@@ -3,7 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { db } from "../db/db";
 import bcrypt from "bcryptjs";
 import { AuthContext } from "../context/AuthContext";
-import image from "../assets/aps5.jpg"
+import image from "../assets/aps5.jpg";
+import Swal from "sweetalert2";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -14,7 +15,12 @@ const LoginPage = () => {
     e.preventDefault();
 
     if (!email || !password) {
-      alert("Please enter both email and password.");
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Something went wrong!",
+        footer: `Please enter both email and password.`,
+      });
       return;
     }
 
@@ -22,13 +28,22 @@ const LoginPage = () => {
       const user = await db.user.where("email").equals(email).first();
 
       if (!user) {
-        alert("No user found with this email.");
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Something went wrong!",
+          footer: `No user found with this email.`,
+        });
         return;
       }
 
       const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch) {
-        alert("Incorrect password.");
+        Swal.fire({
+          icon: "error",
+          title: "Incorrect Password",
+          text: "Incorrect password.",
+        });
         return;
       }
 
@@ -36,16 +51,24 @@ const LoginPage = () => {
         id: user.id,
         email: user.email,
         role: user.role,
-        vehicleNumber:user.vehicleNumber,
-        username: user.username, 
+        vehicleNumber: user.vehicleNumber,
+        username: user.username,
       };
       login(userData);
+      Swal.fire({
+        title: "successfully Logged in!",
+          icon: "success",
+      });
 
-      alert("Login successful!");
       navigate("/home");
     } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Something went wrong!",
+        footer: `${error}`,
+      });
       console.error("Login error:", error);
-      alert("An error occurred during login.");
     }
   };
 
@@ -85,7 +108,6 @@ const LoginPage = () => {
               />
             </div>
 
-          
             <div className="flex flex-col gap-2">
               <label className="text-sm font-semibold text-gray-700">
                 Password
@@ -99,7 +121,6 @@ const LoginPage = () => {
               />
             </div>
 
-         
             <div className="flex justify-between text-xs text-gray-500">
               <a href="#" className="hover:underline text-amber-600">
                 Forgot password?
@@ -109,7 +130,6 @@ const LoginPage = () => {
               </Link>
             </div>
 
-         
             <button
               type="submit"
               className="mt-2 bg-amber-500 hover:bg-amber-600 text-white font-bold py-2 rounded transition duration-200"

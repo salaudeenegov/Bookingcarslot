@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParking } from '../../context/ParkingContext'; 
 import { FaCar, FaUser, FaClock, FaPlusCircle, FaSpinner, FaWrench } from 'react-icons/fa';
+import Swal from 'sweetalert2';
 
 
 const DriveInFormModal = ({ onSave, onCancel }) => {
@@ -12,7 +13,11 @@ const DriveInFormModal = ({ onSave, onCancel }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!vehicleNumber) {
-      alert("Vehicle Number is mandatory.");
+      Swal.fire({
+        icon: 'warning',
+        title: 'Missing Information',
+        text: 'Vehicle Number is mandatory.'
+      });
       return;
     }
     setIsSaving(true);
@@ -107,10 +112,24 @@ const StaffConsole = () => {
 
   // Handler to mark a vehicle as exited
   const handleExitVehicle = async (slotId) => {
-    if (window.confirm('Are you sure you want to mark this vehicle as exited? This action cannot be undone.')) {
-      const result = await markVehicleExit(slotId);
-      if (!result.success) {
-        alert(`Error: ${result.error}`);
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: 'Are you sure you want to mark this vehicle as exited? This action cannot be undone.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, mark as exited',
+      cancelButtonText: 'Cancel'
+    });
+    if (result.isConfirmed) {
+      const resultExit = await markVehicleExit(slotId);
+      if (!resultExit.success) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: `Error: ${resultExit.error}`
+        });
       }
       // The view will auto-update because markVehicleExit calls fetchData(),
       // which updates globalSlots, triggering the useEffect hook.
@@ -132,7 +151,11 @@ const StaffConsole = () => {
       setIsModalOpen(false);
       setSelectedSlotId(null);
     } else {
-      alert(`Error: ${result.error}`);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: `Error: ${result.error}`
+      });
     }
   };
 

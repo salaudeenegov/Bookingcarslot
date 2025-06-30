@@ -12,7 +12,7 @@ function Homelayout() {
     if (!loading && user && location.pathname === "/home") {
       if (user.role === "admin") navigate("/home/admin");
       else if (user.role === "employee") navigate("/home/staff");
-      else navigate("/home/user");
+      else  navigate("/home/user");
     }
   }, [user, location.pathname, navigate, loading]);
 
