@@ -100,7 +100,11 @@ Here are some screenshots that show how the employee console works.
 ![Employee Dashboard](https://drive.google.com/uc?export=view&id=1TOBbpedxLLQ5Xa8g-pwL-DueFAIYzh8p)
 
 ### Walk-In Car Entry
+![Walk-In Car Entry](https://drive.google.com/uc?export=view&id=1VgfjFVJNokGcAXeEJjRLbQJEyfNImyco)
 ![Walk-In Car Entry](https://drive.google.com/uc?export=view&id=1RnQkev-MVlhzhMeweHEivzdQkbQDfHSs)
+
+
+
 
 ### Vehicle Exit Screen
 ![Vehicle Exit Screen](https://drive.google.com/uc?export=view&id=1IKi4aE_NOfHzLpLaBgy-getF7VBEyje9 )
