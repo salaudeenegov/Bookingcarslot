@@ -54,6 +54,7 @@ export const ParkingProvider = ({ children }) => {
       const userCount = await db.user.count();
 
       if (userCount === 0) {
+        localStorage.clear();
         console.log("User table is empty, seeding default data...");
         const salt = await bcrypt.genSalt(10);
         const defaultPassword = await bcrypt.hash("asdfghjkl;'", salt);

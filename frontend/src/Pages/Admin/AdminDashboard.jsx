@@ -166,7 +166,7 @@ const AdminDashboard = () => {
                 </button>
                 {actionMenuSlotId === slot.id && (
                   <div ref={menuRef} className="absolute top-8 right-1 bg-white shadow-lg rounded-md z-10 w-48 text-left border border-gray-200">
-                    {/* --- FIX IS HERE: Added e.stopPropagation() to all menu buttons --- */}
+                  
                     {slot.status === 'occupied' && (
                       <button onClick={(e) => { e.stopPropagation(); handleForceExit(slot.id); }} className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 flex items-center gap-2"><FaSignOutAlt /> Force Exit</button>
                     )}

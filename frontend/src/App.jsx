@@ -13,24 +13,83 @@ import UserHistoryPage from "./Pages/UserPages/UserHistoryPage";
 import UserProfile from "./Pages/UserPages/UserProfile";
 import UserManagment from "./Pages/Admin/UserManagment";
 import AdminLogs from "./Pages/Admin/AdminLogs";
+import ProtectedRoute from "./Components/ProtectedRoute";
+import Unauthorized from "./Pages/Unauthorized";
 
 const App = () => {
   return (
     <Routes>
       <Route path="/" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
+      <Route path="/unauthorized" element={<Unauthorized />} />
       <Route path="/home" element={<Homelayout />}>
         <Route path="admin">
-          <Route index element={<AdminDashboard />} />
-          <Route path="employee" element={<UserManagment />} />
-          <Route path="logs" element={<AdminLogs />} />
+          <Route
+            index
+            element={
+              <ProtectedRoute>
+                <AdminDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="employee"
+            element={
+              <ProtectedRoute>
+                <UserManagment />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="logs"
+            element={
+              <ProtectedRoute>
+                <AdminLogs />
+              </ProtectedRoute>
+            }
+          />
         </Route>
-        <Route path="staff" element={<StaffConsole />} />
+        <Route
+          path="staff"
+          element={
+            <ProtectedRoute>
+              <StaffConsole />
+            </ProtectedRoute>
+          }
+        />
         <Route path="user">
-          <Route index element={<UserHome />} />
-          <Route path="book" element={<BookSlotPage />} />
-          <Route path="history" element={<UserHistoryPage />} />
-          <Route path="profile" element={<UserProfile />} />
+          <Route
+            index
+            element={
+              <ProtectedRoute>
+                <UserHome />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="book"
+            element={
+              <ProtectedRoute>
+                <BookSlotPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="history"
+            element={
+              <ProtectedRoute>
+                <UserHistoryPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="profile"
+            element={
+              <ProtectedRoute>
+                <UserProfile />
+              </ProtectedRoute>
+            }
+          />
         </Route>
       </Route>
     </Routes>

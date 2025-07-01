@@ -135,12 +135,7 @@ const Navbar = () => {
                     >
                       Your Profile
                     </Link>
-                    <Link
-                      to="/settings"
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-amber-100"
-                    >
-                      Settings
-                    </Link>
+                
                     <div className="border-t border-gray-100 my-1"></div>
                     <Link
                       to="/"
